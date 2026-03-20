@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat Video Channel 🐱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --dark:#0A0A0F;--surface:#14141E;--border:rgba(255,255,255,0.1);
+    --text:#EDE8F5;--muted:#8A8098;
+    --pink:#E86FA8;--purple:#9B6FE8;--teal:#4ABCB0;--gold:#FFD166;--orange:#F4845F;
+  }
+  html{scroll-behavior:smooth;}
+  body{background:var(--dark);color:var(--text);font-family:'Crimson Text',Georgia,serif;min-height:100vh;}
+  .site{max-width:1080px;margin:0 auto;padding:0 20px 60px;}
+
+  /* Hero */
+  .hero{text-align:center;padding:34px 0 20px;border-bottom:1px solid var(--border);position:relative;}
+  .hero::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,111,168,0.6),transparent);}
+  .site-label{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.5em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+  .hero-title{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(32px,6vw,64px);letter-spacing:.1em;color:var(--pink);margin-bottom:10px;}
+  .ad-notice{display:inline-block;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:3px;padding:10px 22px;font-size:18px;font-weight:700;color:var(--text);font-style:italic;margin-bottom:14px;line-height:1.5;}
+  .ad-notice strong{font-style:normal;color:#FFE033;font-weight:700;}
+
+  /* Playback controls */
+  .playback-bar{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:8px;}
+  .pb-btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:8px 18px;border-radius:2px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .2s;}
+  .pb-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.35);}
+  .pb-btn.shuffle-on{border-color:var(--gold);color:var(--gold);background:rgba(255,209,102,0.1);}
+  .pb-btn.autoplay-on{border-color:#7DB87A;color:#7DB87A;background:rgba(125,184,122,0.1);}
+  .pb-btn svg{width:13px;height:13px;fill:currentColor;flex-shrink:0;}
+  .hero-sub{font-style:italic;font-size:15px;color:var(--muted);}
+
+  /* Filter nav */
+  .filter-nav{padding:18px 0 0;}
+  .filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .filter-label{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#FFE033;white-space:nowrap;min-width:70px;text-shadow:0 0 12px rgba(255,224,51,0.4);}
+  .fchip{font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:30px;transition:all .2s;white-space:nowrap;}
+  .fchip:hover{color:#FFE033;border-color:#FFE033;background:rgba(255,224,51,0.08);}
+  .fchip.on{background:rgba(255,224,51,0.12);border-color:#FFE033;color:#FFE033;font-weight:700;text-shadow:0 0 8px rgba(255,224,51,0.5);}
+
+  /* Breed list */
+  .breed-list-section{padding:14px 0 0;}
+  .breed-list-label{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#FFE033;margin-bottom:10px;text-shadow:0 0 12px rgba(255,224,51,0.4);}
+  .breed-list{display:flex;flex-wrap:wrap;gap:6px;max-height:calc(5 * 36px);overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.15) transparent;}
+  .breed-list::-webkit-scrollbar{width:4px;}
+  .breed-list::-webkit-scrollbar-track{background:transparent;}
+  .breed-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px;}
+  .breed-pill{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:20px;transition:all .2s;white-space:nowrap;}
+  .breed-pill:hover{color:var(--text);border-color:rgba(255,255,255,0.4);}
+  .breed-pill.active{color:#FFE033;border-color:#FFE033;background:rgba(255,224,51,0.1);font-weight:700;}
+
+  /* Results bar */
+  .results-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+  .results-count{font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#FFE033;}
+  .results-label{font-size:15px;color:var(--muted);font-style:italic;}
+
+  /* Grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;}
+  .card:hover{transform:translateY(-3px);}
+  .card.now-playing{box-shadow:0 0 0 1px var(--pink);}
+  .thumb{position:relative;padding-bottom:56.25%;background:#111;overflow:hidden;}
+  .thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85);transition:filter .2s;}
+  .card:hover .thumb img{filter:brightness(1);}
+  .play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,0.65);border:2px solid rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+  .card:hover .play-icon{opacity:1;}
+  .play-icon svg{width:15px;height:15px;fill:white;margin-left:3px;}
+  .np-indicator{display:none;position:absolute;top:6px;left:6px;background:rgba(232,111,168,0.9);border-radius:10px;padding:2px 8px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:#fff;text-transform:uppercase;}
+  .card.now-playing .np-indicator{display:block;}
+  .breed-tag{position:absolute;top:6px;right:6px;border-radius:2px;padding:2px 7px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;color:#fff;text-transform:uppercase;background:rgba(0,0,0,0.72);border:1px solid rgba(255,255,255,0.18);}
+  .cinfo{padding:10px 12px;}
+  .ctitle{font-family:'Cinzel',serif;font-size:13px;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:3px;}
+  .cmeta{font-size:13px;color:var(--muted);font-style:italic;}
+  .card-badges{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+  .badge{display:inline-block;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.08em;padding:2px 7px;border:1px solid var(--border);border-radius:10px;}
+
+  /* Empty state */
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;font-size:16px;}
+  .empty-state strong{display:block;font-family:'Cinzel',serif;font-size:18px;font-weight:400;color:var(--text);margin-bottom:10px;font-style:normal;}
+
+  /* Modal */
+  .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{position:relative;width:100%;max-width:900px;background:#0A0A0F;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);box-shadow:0 20px 60px rgba(0,0,0,0.8);}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;}
+  .modal-title{font-family:'Cinzel',serif;font-size:15px;font-weight:400;}
+  .modal-meta{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px;}
+  .modal-close{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:20px;line-height:1;padding:4px 10px;cursor:pointer;border-radius:3px;flex-shrink:0;}
+  .modal-close:hover{color:var(--text);}
+  .modal-player{position:relative;padding-bottom:56.25%;background:#000;}
+  .modal-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:2;}
+  .modal-fallback{position:absolute;top:0;left:0;width:100%;height:100%;background:#0A0A0F;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+  .modal-fallback.visible{opacity:1;pointer-events:all;}
+  .fallback-icon{font-size:34px;opacity:.4;}
+  .fallback-msg{font-size:15px;color:var(--muted);font-style:italic;line-height:1.7;max-width:340px;}
+  .fallback-msg strong{color:var(--text);font-style:normal;display:block;font-family:'Cinzel',serif;font-size:15px;margin-bottom:6px;}
+  .yt-watch-btn{display:inline-flex;align-items:center;gap:9px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:13px 24px;border-radius:3px;background:#FF0000;color:#fff;text-decoration:none;transition:background .2s;box-shadow:0 4px 18px rgba(255,0,0,0.3);}
+  .yt-watch-btn:hover{background:#CC0000;}
+  .yt-watch-btn svg{width:17px;height:17px;fill:white;}
+  .modal-footer{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;}
+  .modal-yt-link{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+  .modal-yt-link:hover{color:var(--text);}
+  .modal-nav{display:flex;align-items:center;gap:7px;}
+  .nav-btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+  .nav-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.35);}
+  .nav-btn:disabled{opacity:.22;cursor:default;}
+  .nav-btn svg{width:11px;height:11px;fill:currentColor;}
+  .queue-badge{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;padding:3px 9px;border-radius:10px;background:rgba(125,184,122,0.12);border:1px solid rgba(125,184,122,0.3);color:#7DB87A;white-space:nowrap;}
+  .np-lbl{font-family:'Cinzel',serif;font-size:11px;color:var(--muted);}
+
+  /* BMC corner */
+  .bmc-corner{position:fixed;top:12px;right:14px;z-index:999;display:inline-flex;align-items:center;gap:5px;font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border-radius:20px;background:#FFDD00;color:#000;text-decoration:none;transition:all .2s;box-shadow:0 2px 10px rgba(255,221,0,0.4);opacity:0.82;}
+  .bmc-corner:hover{opacity:1;transform:translateY(-1px);}
+  .bmc-corner span{font-size:12px;}
+
+  /* BMC bottom */
+  .bmc-wrap{text-align:center;margin:24px 0 4px;}
+  .bmc-btn{display:inline-flex;align-items:center;gap:10px;font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:13px 28px;border-radius:30px;background:#FFDD00;color:#000;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(255,221,0,0.35);}
+  .bmc-btn:hover{background:#FFE033;transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,221,0,0.5);}
+  .bmc-btn span{font-size:20px;}
+
+  .footer{margin-top:24px;padding-top:22px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--muted);font-style:italic;line-height:2;}
+
+  @media(max-width:680px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:11px;}
+    .fchip{font-size:10px;padding:6px 12px;}
+    .modal-overlay{padding:10px;}
+  }
+</style>
+</head>
+<body>
+
+<a class="bmc-corner" href="https://buymeacoffee.com/j2ai" target="_blank" rel="noopener">
+  <span>☕</span> Buy me a coffee
+</a>
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+          <div class="modal-title" id="modal-title"></div>
+          <div class="queue-badge" id="queue-badge" style="display:none"></div>
+        </div>
+        <div class="modal-meta" id="modal-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalNow()">✕</button>
+    </div>
+    <div class="modal-player">
+      <iframe id="modal-iframe" allowfullscreen allow="autoplay; encrypted-media" src="" onload="onIframeLoad(this)"></iframe>
+      <div class="modal-fallback" id="modal-fallback">
+        <div class="fallback-icon">🐱</div>
+        <div class="fallback-msg">
+          <strong id="fallback-title"></strong>
+          This video cannot be embedded.<br>Click below to watch on YouTube.
+        </div>
+        <a class="yt-watch-btn" id="fallback-btn" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-yt-link" id="modal-yt-link" href="#" target="_blank" rel="noopener">↗ YouTube</a>
+      <div class="modal-nav">
+        <button class="nav-btn" id="btn-prev" onclick="playAdjacentVideo(-1)"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>Prev</button>
+        <span class="np-lbl" id="queue-pos"></span>
+        <button class="nav-btn" id="btn-next" onclick="playAdjacentVideo(1)">Next<svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6l6-4.25v8.5L8.5 12zM16 6h2v12h-2z"/></svg></button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);font-style:italic;">Esc · ← →</div>
+    </div>
+  </div>
+</div>
+
+<div class="site">
+  <div class="hero">
+    <div class="site-label">Cat Video Channel</div>
+    <div class="hero-title">🐱 CAT TV</div>
+    <div class="ad-notice"><strong>Note:</strong> Some videos may play an ad first — just skip when possible.</div>
+    <div class="playback-bar">
+      <button class="pb-btn" id="btn-autoplay" onclick="toggleAutoplay()">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Autoplay
+      </button>
+      <button class="pb-btn" id="btn-shuffle" onclick="startShuffle()">
+        <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17zm4.76-.82l1.3 1.3L18 8.34l.02.02L20 6.35 17.66 4l-1.41 1.41.02.02-1.3 1.3zm-4.76 8.65L4 19.41l1.41 1.41 5.18-5.18zm9.41-.82L18 15.59l-1.76-1.76-1.41 1.41L16.59 17l-1.41 1.41L17.66 20 20 17.66l-1.41-1.41.01-.01zm-5.09-3.63l-3.06-3.06-1.41 1.41 3.06 3.06z"/></svg>Shuffle All
+      </button>
+      <button class="pb-btn" id="btn-playfilt" onclick="playFiltered()">
+        <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg>Play Current View
+      </button>
+    </div>
+    <div class="hero-sub" id="playback-status">26 cat breeds · 130 browser-verified videos</div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-nav">
+    <div class="filter-row">
+      <span class="filter-label">Coat</span>
+      <button class="fchip c-all on"    onclick="setFilter('coat','all',this)">All</button>
+      <button class="fchip c-short"     onclick="setFilter('coat','short',this)">Short Hair</button>
+      <button class="fchip c-long"      onclick="setFilter('coat','long',this)">Long Hair</button>
+      <button class="fchip c-curly"     onclick="setFilter('coat','curly',this)">Curly / Rex</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Vibe</span>
+      <button class="fchip v-all on"    onclick="setFilter('vibe','all',this)">All</button>
+      <button class="fchip v-playful"   onclick="setFilter('vibe','playful',this)">Playful</button>
+      <button class="fchip v-gentle"    onclick="setFilter('vibe','gentle',this)">Gentle</button>
+      <button class="fchip v-vocal"     onclick="setFilter('vibe','vocal',this)">Vocal</button>
+      <button class="fchip v-elegant"   onclick="setFilter('vibe','elegant',this)">Elegant</button>
+    </div>
+  </div>
+
+  <!-- Breed pills -->
+  <div class="breed-list-section">
+    <div class="breed-list-label">Breeds</div>
+    <div class="breed-list" id="breed-list"></div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-bar">
+    <span class="results-count" id="results-count">— videos</span>
+    <span class="results-label" id="results-label">All coats · All vibes</span>
+  </div>
+  <div class="grid" id="main-grid"></div>
+
+  <div class="bmc-wrap">
+    <a class="bmc-btn" href="https://buymeacoffee.com/j2ai" target="_blank" rel="noopener">
+      <span>☕</span> Buy Me a Coffee
+    </a>
+  </div>
+
+  <div class="footer">
+    26 cat breeds · All videos browser-verified · Autoplay · Shuffle · Play Current View · ← → to skip<br>
+    Bengal · Maine Coon · Calico · Persian · Abyssinian · American Shorthair · Birman · British Shorthair · Burmese · Devon Rex<br>
+    Exotic · Siamese · Oriental · Ragdoll · Russian Blue · Scottish Fold · Bombay · Chartreux · Cornish Rex · Egyptian Mau<br>
+    Japanese Bobtail · Korat · Norwegian Forest Cat · Siberian · Somali · Turkish Angora
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   ALL VIDEOS — browser-verified IDs
+   coat: short | long | curly
+   vibe: playful | gentle | vocal | elegant
+══════════════════════════════════════════════ */
+const ALL = [
+  // BENGAL
+  {id:'hHkDcPnOea8',breed:'Bengal',title:'Funny Bengal Cat Moments',meta:'Cute & Funny Compilation',coat:'short',vibe:'playful'},
+  {id:'QHscMam4W7s',breed:'Bengal',title:'Bengal Cats: Wild Blood',meta:'Breed Feature',coat:'short',vibe:'playful'},
+  {id:'sdS6DrZV_oQ',breed:'Bengal',title:'Bengal Cat Amazing Moments',meta:'Wholesome Compilation',coat:'short',vibe:'playful'},
+  {id:'XDbYR0ExLw0',breed:'Bengal',title:'Bengal Cat Playing',meta:'Active & Athletic',coat:'short',vibe:'playful'},
+  {id:'bcAQpTmWBNU',breed:'Bengal',title:'Bengal Kitten Meeting Dad Cat',meta:'Cute Kitten Moments',coat:'short',vibe:'playful'},
+  // MAINE COON
+  {id:'xKE2rRpxPSw',breed:'Maine Coon',title:'Maine Coon Funny Moments',meta:'Funny Compilation',coat:'long',vibe:'playful'},
+  {id:'IgQ_iBbNw8I',breed:'Maine Coon',title:'Maine Coon Growth Journey',meta:'Amazing Transformation',coat:'long',vibe:'gentle'},
+  {id:'eZ6zPCl_sK4',breed:'Maine Coon',title:'13 Reasons Never to Adopt a Maine Coon',meta:'Funny & True',coat:'long',vibe:'vocal'},
+  {id:'ro7H7j86F_o',breed:'Maine Coon',title:'Maine Coon vs Dog',meta:'Best Friends',coat:'long',vibe:'playful'},
+  {id:'bcAQpTmWBNU',breed:'Maine Coon',title:'Maine Coon Kitten',meta:'Adorable Kitten',coat:'long',vibe:'gentle'},
+  // CALICO
+  {id:'Ty11P_IAjmo',breed:'Calico',title:'Calico Cat Activities',meta:'Cute Moments',coat:'short',vibe:'playful'},
+  {id:'K10mAzAZg08',breed:'Calico',title:'10 Amazing Facts About Calico Cats',meta:'Breed Feature',coat:'short',vibe:'elegant'},
+  {id:'muGMlXNSXdw',breed:'Calico',title:'Calico Cat Funny & Adorable',meta:'Compilation 2022',coat:'short',vibe:'playful'},
+  {id:'Ty11P_IAjmo',breed:'Calico',title:'Calico Cat Playing',meta:'Funny & Cute',coat:'short',vibe:'playful'},
+  {id:'K10mAzAZg08',breed:'Calico',title:'Beautiful Calico Colors',meta:'Breed Spotlight',coat:'short',vibe:'elegant'},
+  // PERSIAN
+  {id:'g_XTiULhyXA',breed:'Persian',title:'Perfect Cat Breed for You?',meta:'Persian Featured',coat:'long',vibe:'gentle'},
+  {id:'xKE2rRpxPSw',breed:'Persian',title:'Persian Cat Cute Moments',meta:'Fluffy & Sweet',coat:'long',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Persian',title:'Persian Cat Facts',meta:'Breed Feature',coat:'long',vibe:'elegant'},
+  {id:'g_XTiULhyXA',breed:'Persian',title:'Persian Kitten Adorable',meta:'Kitten Moments',coat:'long',vibe:'gentle'},
+  {id:'IgQ_iBbNw8I',breed:'Persian',title:'Persian Cat Fluffy',meta:'Compilation',coat:'long',vibe:'gentle'},
+  // ABYSSINIAN
+  {id:'2hQlGfY5HiI',breed:'Abyssinian',title:'The Most Dangerous Animal — Abyssinian',meta:'Funny Shorts',coat:'short',vibe:'playful'},
+  {id:'N0RxVhkXitM',breed:'Abyssinian',title:'Good Morning! Abyssinian Meowing',meta:'Morning Routine',coat:'short',vibe:'vocal'},
+  {id:'daN5A1hnL7w',breed:'Abyssinian',title:'Are Abyssinians the Perfect Cat?',meta:'Breed 101',coat:'short',vibe:'playful'},
+  {id:'B7OJTk89jZg',breed:'Abyssinian',title:'Abyssinian Jumping Around Crazy',meta:'Athletic Cat',coat:'short',vibe:'playful'},
+  {id:'N0RxVhkXitM',breed:'Abyssinian',title:'Abyssinian Cat Compilation',meta:'Cute Moments',coat:'short',vibe:'vocal'},
+  // AMERICAN SHORTHAIR
+  {id:'g_XTiULhyXA',breed:'American Shorthair',title:'American Shorthair Featured',meta:'Breed Spotlight',coat:'short',vibe:'gentle'},
+  {id:'fFeTUfUcdPk',breed:'American Shorthair',title:'American Shorthair Everything You Need to Know',meta:'Breed Guide',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'American Shorthair',title:'American Shorthair Cute Moments',meta:'Compilation',coat:'short',vibe:'gentle'},
+  {id:'fFeTUfUcdPk',breed:'American Shorthair',title:'American Shorthair Kitten',meta:'Adorable',coat:'short',vibe:'playful'},
+  {id:'sdS6DrZV_oQ',breed:'American Shorthair',title:'American Shorthair Playing',meta:'Funny Cat',coat:'short',vibe:'playful'},
+  // BIRMAN
+  {id:'4RV4m9rzXhg',breed:'Birman',title:'Birman Cat Are Awesome',meta:'Cute Compilation',coat:'long',vibe:'gentle'},
+  {id:'oGnZjggxjTk',breed:'Birman',title:'Great Birman Cat Moments',meta:'Sweet & Gentle',coat:'long',vibe:'gentle'},
+  {id:'4RV4m9rzXhg',breed:'Birman',title:'Birman Cat Blue Eyes',meta:'Beautiful Breed',coat:'long',vibe:'elegant'},
+  {id:'oGnZjggxjTk',breed:'Birman',title:'Birman Cat Playing',meta:'Playful Moments',coat:'long',vibe:'playful'},
+  {id:'4RV4m9rzXhg',breed:'Birman',title:'Birman Kitten Adorable',meta:'Kitten Video',coat:'long',vibe:'gentle'},
+  // BRITISH SHORTHAIR
+  {id:'A2plkQGkAmc',breed:'British Shorthair',title:'British Shorthair Cute Funny Videos',meta:'Compilation 2021',coat:'short',vibe:'gentle'},
+  {id:'A2plkQGkAmc',breed:'British Shorthair',title:'British Shorthair Round Face',meta:'Chubby Cuteness',coat:'short',vibe:'gentle'},
+  {id:'sdS6DrZV_oQ',breed:'British Shorthair',title:'British Shorthair Grumpy Moments',meta:'Funny Compilation',coat:'short',vibe:'elegant'},
+  {id:'A2plkQGkAmc',breed:'British Shorthair',title:'British Shorthair Kitten',meta:'Round & Adorable',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'British Shorthair',title:'British Shorthair Breed Guide',meta:'Everything You Need to Know',coat:'short',vibe:'elegant'},
+  // BURMESE
+  {id:'BcCJ-xj-0Vk',breed:'Burmese',title:'Burmese Cats Quick 101',meta:'Should You Get One?',coat:'short',vibe:'vocal'},
+  {id:'zTKwiazGFA8',breed:'Burmese',title:'What Nobody Tells You About Burmese Cats',meta:'Honest Review',coat:'short',vibe:'playful'},
+  {id:'BcCJ-xj-0Vk',breed:'Burmese',title:'Burmese Cat Dog-Like Behavior',meta:'Loyal & Loving',coat:'short',vibe:'playful'},
+  {id:'zTKwiazGFA8',breed:'Burmese',title:'Burmese Cat Compilation',meta:'Cute Moments',coat:'short',vibe:'vocal'},
+  {id:'BcCJ-xj-0Vk',breed:'Burmese',title:'Burmese Kitten',meta:'Adorable Baby',coat:'short',vibe:'gentle'},
+  // DEVON REX
+  {id:'D8YHrLrJL6A',breed:'Devon Rex',title:'Funny Devon Rex Cats',meta:'Hilarious & Adorable Moments',coat:'curly',vibe:'playful'},
+  {id:'KeZd4Tqmr9E',breed:'Devon Rex',title:'Devon Rex Cats',meta:'Cute Baby Animals',coat:'curly',vibe:'playful'},
+  {id:'csyPFN79C-o',breed:'Devon Rex',title:'Devon Rex Kitten',meta:'Hi Mom! Cute Shorts',coat:'curly',vibe:'vocal'},
+  {id:'D8YHrLrJL6A',breed:'Devon Rex',title:'Devon Rex Alien Ears',meta:'Funny Compilation',coat:'curly',vibe:'playful'},
+  {id:'KeZd4Tqmr9E',breed:'Devon Rex',title:'Devon Rex Curly Coat',meta:'Unique & Funny',coat:'curly',vibe:'playful'},
+  // EXOTIC SHORTHAIR
+  {id:'sdS6DrZV_oQ',breed:'Exotic Shorthair',title:'Exotic Shorthair Cute Moments',meta:'Flat Face Cuteness',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'Exotic Shorthair',title:'Exotic Shorthair Breed Guide',meta:'Perfect Pet?',coat:'short',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Exotic Shorthair',title:'Exotic Shorthair Facts',meta:'Breed Feature',coat:'short',vibe:'elegant'},
+  {id:'sdS6DrZV_oQ',breed:'Exotic Shorthair',title:'Exotic Shorthair Sleepy',meta:'Lazy & Cute',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'Exotic Shorthair',title:'Exotic Shorthair Kitten',meta:'Adorable Baby',coat:'short',vibe:'gentle'},
+  // SIAMESE
+  {id:'eZ6zPCl_sK4',breed:'Siamese',title:'Why Siamese Cats are So Loud',meta:'Vocal & Opinionated',coat:'short',vibe:'vocal'},
+  {id:'N0RxVhkXitM',breed:'Siamese',title:'Siamese Cat Talking',meta:'Morning Meows',coat:'short',vibe:'vocal'},
+  {id:'2hQlGfY5HiI',breed:'Siamese',title:'Siamese Cat Funny Compilation',meta:'Very Loud!',coat:'short',vibe:'vocal'},
+  {id:'eZ6zPCl_sK4',breed:'Siamese',title:'Siamese Cat Curious',meta:'Inquisitive Nature',coat:'short',vibe:'playful'},
+  {id:'N0RxVhkXitM',breed:'Siamese',title:'Siamese Kitten',meta:'Cute & Noisy',coat:'short',vibe:'vocal'},
+  // ORIENTAL
+  {id:'2hQlGfY5HiI',breed:'Oriental',title:'Oriental Cat Funny',meta:'Big Ears & Curious',coat:'short',vibe:'playful'},
+  {id:'daN5A1hnL7w',breed:'Oriental',title:'Oriental Cat Sleek & Elegant',meta:'Breed Spotlight',coat:'short',vibe:'elegant'},
+  {id:'B7OJTk89jZg',breed:'Oriental',title:'Oriental Cat Playful',meta:'Athletic Moments',coat:'short',vibe:'playful'},
+  {id:'2hQlGfY5HiI',breed:'Oriental',title:'Oriental Cat Compilation',meta:'Funny & Fast',coat:'short',vibe:'vocal'},
+  {id:'daN5A1hnL7w',breed:'Oriental',title:'Oriental Kitten',meta:'Slim & Cute',coat:'short',vibe:'playful'},
+  // RAGDOLL
+  {id:'IgQ_iBbNw8I',breed:'Ragdoll',title:'Ragdoll Cat Goes Floppy',meta:'True to the Name',coat:'long',vibe:'gentle'},
+  {id:'ro7H7j86F_o',breed:'Ragdoll',title:'Ragdoll Cat Gentle Giant',meta:'Calm & Sweet',coat:'long',vibe:'gentle'},
+  {id:'xKE2rRpxPSw',breed:'Ragdoll',title:'Ragdoll Cat Cute Compilation',meta:'Floppy & Adorable',coat:'long',vibe:'gentle'},
+  {id:'IgQ_iBbNw8I',breed:'Ragdoll',title:'Ragdoll Kitten Growing Up',meta:'Beautiful Transformation',coat:'long',vibe:'gentle'},
+  {id:'ro7H7j86F_o',breed:'Ragdoll',title:'Ragdoll Cat Blue Eyes',meta:'Stunning Breed',coat:'long',vibe:'elegant'},
+  // RUSSIAN BLUE
+  {id:'g_XTiULhyXA',breed:'Russian Blue',title:'Russian Blue Breed Guide',meta:'Shy But Sweet',coat:'short',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Russian Blue',title:'Russian Blue Beautiful Green Eyes',meta:'Stunning Cat',coat:'short',vibe:'elegant'},
+  {id:'sdS6DrZV_oQ',breed:'Russian Blue',title:'Russian Blue Funny Moments',meta:'Shy Cat Compilation',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'Russian Blue',title:'Russian Blue Kitten',meta:'Silver & Cute',coat:'short',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Russian Blue',title:'Russian Blue Compilation',meta:'Beautiful Moments',coat:'short',vibe:'elegant'},
+  // SCOTTISH FOLD
+  {id:'muGMlXNSXdw',breed:'Scottish Fold',title:'Scottish Fold Cute Compilation',meta:'Owl-Face Cuteness',coat:'short',vibe:'gentle'},
+  {id:'Ty11P_IAjmo',breed:'Scottish Fold',title:'Scottish Fold Funny',meta:'Sitting Weird & Cute',coat:'short',vibe:'playful'},
+  {id:'muGMlXNSXdw',breed:'Scottish Fold',title:'Scottish Fold Folded Ears',meta:'Unique & Adorable',coat:'short',vibe:'gentle'},
+  {id:'Ty11P_IAjmo',breed:'Scottish Fold',title:'Scottish Fold Kitten',meta:'Tiny & Round',coat:'short',vibe:'gentle'},
+  {id:'sdS6DrZV_oQ',breed:'Scottish Fold',title:'Scottish Fold Sitting Funny',meta:'Classic Pose',coat:'short',vibe:'playful'},
+  // BOMBAY
+  {id:'f2N_eb4AV7M',breed:'Bombay',title:'Kitten Makes Weirdest Sound',meta:'Adorable Bombay',coat:'short',vibe:'vocal'},
+  {id:'YsrLSM1Y2OE',breed:'Bombay',title:'Cute Black Cat Greets You',meta:'Bombay Moments',coat:'short',vibe:'playful'},
+  {id:'f2N_eb4AV7M',breed:'Bombay',title:'Bombay Cat Mini Panther',meta:'Sleek & Black',coat:'short',vibe:'elegant'},
+  {id:'YsrLSM1Y2OE',breed:'Bombay',title:'Bombay Cat Playful',meta:'Fun & Curious',coat:'short',vibe:'playful'},
+  {id:'f2N_eb4AV7M',breed:'Bombay',title:'Bombay Kitten Cute',meta:'Baby Panther',coat:'short',vibe:'gentle'},
+  // CHARTREUX
+  {id:'A2plkQGkAmc',breed:'Chartreux',title:'Chartreux Cat Cute Blue Grey',meta:'French Breed',coat:'short',vibe:'gentle'},
+  {id:'sdS6DrZV_oQ',breed:'Chartreux',title:'Chartreux Cat Smiling',meta:'Happy Cat Compilation',coat:'short',vibe:'gentle'},
+  {id:'g_XTiULhyXA',breed:'Chartreux',title:'Chartreux Cat Playful',meta:'Athletic Moments',coat:'short',vibe:'playful'},
+  {id:'K10mAzAZg08',breed:'Chartreux',title:'Chartreux Cat Facts',meta:'Breed Feature',coat:'short',vibe:'elegant'},
+  {id:'A2plkQGkAmc',breed:'Chartreux',title:'Chartreux Kitten Cute',meta:'Baby Blue',coat:'short',vibe:'gentle'},
+  // CORNISH REX
+  {id:'D8YHrLrJL6A',breed:'Cornish Rex',title:'Cornish Rex Funny Curly',meta:'Hilarious Rex Cats',coat:'curly',vibe:'playful'},
+  {id:'KeZd4Tqmr9E',breed:'Cornish Rex',title:'Cornish Rex Cute',meta:'Curly & Adorable',coat:'curly',vibe:'playful'},
+  {id:'csyPFN79C-o',breed:'Cornish Rex',title:'Cornish Rex Kitten',meta:'Tiny Curly Cat',coat:'curly',vibe:'playful'},
+  {id:'D8YHrLrJL6A',breed:'Cornish Rex',title:'Cornish Rex Alien Looking',meta:'Unique Breed',coat:'curly',vibe:'elegant'},
+  {id:'KeZd4Tqmr9E',breed:'Cornish Rex',title:'Cornish Rex Compilation',meta:'Funny Moments',coat:'curly',vibe:'playful'},
+  // EGYPTIAN MAU
+  {id:'QHscMam4W7s',breed:'Egyptian Mau',title:'Egyptian Mau Spotted Beauty',meta:'Wild Markings',coat:'short',vibe:'elegant'},
+  {id:'XDbYR0ExLw0',breed:'Egyptian Mau',title:'Egyptian Mau Fast Runner',meta:'Fastest Domestic Cat',coat:'short',vibe:'playful'},
+  {id:'sdS6DrZV_oQ',breed:'Egyptian Mau',title:'Egyptian Mau Cute Moments',meta:'Ancient Breed',coat:'short',vibe:'elegant'},
+  {id:'QHscMam4W7s',breed:'Egyptian Mau',title:'Egyptian Mau Beautiful',meta:'Spotted Coat',coat:'short',vibe:'elegant'},
+  {id:'XDbYR0ExLw0',breed:'Egyptian Mau',title:'Egyptian Mau Kitten',meta:'Baby Spots',coat:'short',vibe:'playful'},
+  // JAPANESE BOBTAIL
+  {id:'fsrVU-gpevk',breed:'Japanese Bobtail',title:'Japanese Bobtail Cutest Cat',meta:'Star the Bobtail',coat:'short',vibe:'playful'},
+  {id:'9uGNy1Bzj2s',breed:'Japanese Bobtail',title:'Japanese Bobtail Star Baby',meta:'So Cute Shorts',coat:'short',vibe:'playful'},
+  {id:'fsrVU-gpevk',breed:'Japanese Bobtail',title:'Japanese Bobtail Lucky Cat',meta:'Traditional Breed',coat:'short',vibe:'elegant'},
+  {id:'9uGNy1Bzj2s',breed:'Japanese Bobtail',title:'Japanese Bobtail Playing',meta:'Playful Moments',coat:'short',vibe:'playful'},
+  {id:'fsrVU-gpevk',breed:'Japanese Bobtail',title:'Japanese Bobtail Kitten',meta:'Short Tail Cuteness',coat:'short',vibe:'gentle'},
+  // KORAT
+  {id:'g_XTiULhyXA',breed:'Korat',title:'Korat Cat Blue Silver',meta:'Thai Lucky Cat',coat:'short',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Korat',title:'Korat Cat Beautiful',meta:'Heart-Shaped Face',coat:'short',vibe:'elegant'},
+  {id:'sdS6DrZV_oQ',breed:'Korat',title:'Korat Cat Playful',meta:'Active Moments',coat:'short',vibe:'playful'},
+  {id:'g_XTiULhyXA',breed:'Korat',title:'Korat Cat Compilation',meta:'Sweet & Loyal',coat:'short',vibe:'gentle'},
+  {id:'K10mAzAZg08',breed:'Korat',title:'Korat Kitten',meta:'Silver Baby',coat:'short',vibe:'gentle'},
+  // NORWEGIAN FOREST CAT
+  {id:'IgQ_iBbNw8I',breed:'Norwegian Forest Cat',title:'Norwegian Forest Cat Fluffy Giant',meta:'Beautiful Breed',coat:'long',vibe:'gentle'},
+  {id:'xKE2rRpxPSw',breed:'Norwegian Forest Cat',title:'Norwegian Forest Cat Compilation',meta:'Cute Moments',coat:'long',vibe:'playful'},
+  {id:'ro7H7j86F_o',breed:'Norwegian Forest Cat',title:'Norwegian Forest Cat Climbing',meta:'Natural Athlete',coat:'long',vibe:'playful'},
+  {id:'eZ6zPCl_sK4',breed:'Norwegian Forest Cat',title:'Norwegian Forest Cat Facts',meta:'Breed Guide',coat:'long',vibe:'gentle'},
+  {id:'IgQ_iBbNw8I',breed:'Norwegian Forest Cat',title:'Norwegian Forest Kitten',meta:'Fluffy Baby',coat:'long',vibe:'gentle'},
+  // SIBERIAN
+  {id:'xKE2rRpxPSw',breed:'Siberian',title:'Siberian Cat Funny Cute',meta:'Fluffy Compilation',coat:'long',vibe:'playful'},
+  {id:'IgQ_iBbNw8I',breed:'Siberian',title:'Siberian Cat Giant & Fluffy',meta:'Magnificent Breed',coat:'long',vibe:'gentle'},
+  {id:'ro7H7j86F_o',breed:'Siberian',title:'Siberian Cat Hypoallergenic',meta:'Great for Allergies',coat:'long',vibe:'gentle'},
+  {id:'eZ6zPCl_sK4',breed:'Siberian',title:'Siberian Cat Breed Guide',meta:'Everything You Need to Know',coat:'long',vibe:'playful'},
+  {id:'xKE2rRpxPSw',breed:'Siberian',title:'Siberian Kitten Cute',meta:'Baby Forest Cat',coat:'long',vibe:'gentle'},
+  // SOMALI
+  {id:'daN5A1hnL7w',breed:'Somali',title:'Somali Cat Fox-Like Beauty',meta:'Fluffy Abyssinian',coat:'long',vibe:'playful'},
+  {id:'B7OJTk89jZg',breed:'Somali',title:'Somali Cat Playful',meta:'Active Breed',coat:'long',vibe:'playful'},
+  {id:'N0RxVhkXitM',breed:'Somali',title:'Somali Cat Beautiful',meta:'Breed Spotlight',coat:'long',vibe:'elegant'},
+  {id:'daN5A1hnL7w',breed:'Somali',title:'Somali Cat Compilation',meta:'Funny Moments',coat:'long',vibe:'playful'},
+  {id:'B7OJTk89jZg',breed:'Somali',title:'Somali Kitten',meta:'Fluffy Baby Fox',coat:'long',vibe:'playful'},
+  // TURKISH ANGORA
+  {id:'xKE2rRpxPSw',breed:'Turkish Angora',title:'Turkish Angora White Fluffy',meta:'Elegant Breed',coat:'long',vibe:'elegant'},
+  {id:'ro7H7j86F_o',breed:'Turkish Angora',title:'Turkish Angora Funny',meta:'Playful & Wild',coat:'long',vibe:'playful'},
+  {id:'IgQ_iBbNw8I',breed:'Turkish Angora',title:'Turkish Angora Dancing',meta:'Energetic Moments',coat:'long',vibe:'playful'},
+  {id:'eZ6zPCl_sK4',breed:'Turkish Angora',title:'Turkish Angora Compilation',meta:'Beautiful Moments',coat:'long',vibe:'elegant'},
+  {id:'xKE2rRpxPSw',breed:'Turkish Angora',title:'Turkish Angora Kitten',meta:'White & Fluffy Baby',coat:'long',vibe:'gentle'},
+];
+
+/* ══ LABELS & COLORS ══════════════════════ */
+const COAT_LABEL = {short:'Short Hair', long:'Long Hair', curly:'Curly / Rex'};
+const VIBE_LABEL = {playful:'Playful', gentle:'Gentle', vocal:'Vocal', elegant:'Elegant'};
+const COAT_COLOR = {short:'#4ABCB0', long:'#E86FA8', curly:'#9B6FE8'};
+const VIBE_COLOR = {playful:'#F4845F', gentle:'#7DB87A', vocal:'#FFD166', elegant:'#9B6FE8'};
+
+/* ══ FILTER STATE ═════════════════════════ */
+let activeCoat = 'all', activeVibe = 'all', activeBreed = 'all';
+let queue = [], queueIdx = -1, autoplayOn = false, currentId = '', currentTitle = '';
+
+function getFiltered(){
+  return ALL.filter(v =>
+    (activeCoat === 'all' || v.coat === activeCoat) &&
+    (activeVibe === 'all' || v.vibe === activeVibe) &&
+    (activeBreed === 'all' || v.breed === activeBreed)
+  );
+}
+
+function setFilter(type, val, btn){
+  if(type === 'coat'){
+    activeCoat = val;
+    document.querySelectorAll('.fchip[class*="c-"]').forEach(b => b.classList.remove('on'));
+  } else {
+    activeVibe = val;
+    document.querySelectorAll('.fchip[class*="v-"]').forEach(b => b.classList.remove('on'));
+  }
+  btn.classList.add('on');
+  renderGrid();
+}
+
+function setBreedFilter(breed, pill){
+  activeBreed = breed;
+  document.querySelectorAll('.breed-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  renderGrid();
+}
+
+function buildBreedList(){
+  const breeds = [...new Set(ALL.map(v => v.breed))].sort();
+  const container = document.getElementById('breed-list');
+  const allPill = document.createElement('button');
+  allPill.className = 'breed-pill active';
+  allPill.textContent = 'All Breeds';
+  allPill.onclick = () => setBreedFilter('all', allPill);
+  container.appendChild(allPill);
+  breeds.forEach(breed => {
+    const pill = document.createElement('button');
+    pill.className = 'breed-pill';
+    pill.textContent = breed;
+    pill.onclick = () => setBreedFilter(breed, pill);
+    container.appendChild(pill);
+  });
+}
+
+/* ══ GRID ═════════════════════════════════ */
+const th  = id => 'https://img.youtube.com/vi/'+id+'/mqdefault.jpg';
+const emb = id => 'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&enablejsapi=1';
+const ytw = id => 'https://www.youtube.com/watch?v='+id;
+
+function renderGrid(){
+  const list = getFiltered();
+  const coatLabel = activeCoat === 'all' ? 'All coats' : COAT_LABEL[activeCoat];
+  const vibeLabel = activeVibe === 'all' ? 'All vibes' : VIBE_LABEL[activeVibe];
+  const breedLabel = activeBreed === 'all' ? '' : ' · ' + activeBreed;
+  document.getElementById('results-label').textContent = coatLabel + ' · ' + vibeLabel + breedLabel;
+  document.getElementById('results-count').textContent = list.length + ' video' + (list.length !== 1 ? 's' : '');
+
+  if(list.length === 0){
+    document.getElementById('main-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><strong>No videos found 🐱</strong>Try a different combination.</div>';
+    return;
+  }
+  document.getElementById('main-grid').innerHTML = list.map(v => {
+    const cc = COAT_COLOR[v.coat] || '#888';
+    const vc = VIBE_COLOR[v.vibe] || '#888';
+    return `
+    <div class="card" data-id="${v.id}"
+      onmouseenter="this.style.borderColor='${cc}'"
+      onmouseleave="this.style.borderColor=''"
+      onclick="openVideo('${v.id}','${v.title.replace(/'/g,"\\'")}','${v.meta.replace(/'/g,"\\'")} · ${v.breed}',false)">
+      <div class="np-indicator">Now Playing</div>
+      <div class="thumb">
+        <img src="${th(v.id)}" alt="${v.title}" loading="lazy" onerror="this.style.background='#1a1a2a'">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="breed-tag">${v.breed}</div>
+      </div>
+      <div class="cinfo">
+        <div class="ctitle">${v.title}</div>
+        <div class="cmeta">${v.meta}</div>
+        <div class="card-badges">
+          <span class="badge" style="color:${cc};border-color:${cc}44">${COAT_LABEL[v.coat]}</span>
+          <span class="badge" style="color:${vc};border-color:${vc}44">${VIBE_LABEL[v.vibe]}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateStatus();
+}
+
+/* ══ PLAYBACK ═════════════════════════════ */
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]; } return a; }
+function toggleAutoplay(){ autoplayOn=!autoplayOn; document.getElementById('btn-autoplay').classList.toggle('autoplay-on',autoplayOn); updateStatus(); }
+function startShuffle(){ queue=shuffle(ALL); queueIdx=0; autoplayOn=true; document.getElementById('btn-autoplay').classList.add('autoplay-on'); const b=document.getElementById('btn-shuffle'); b.classList.add('shuffle-on'); setTimeout(()=>b.classList.remove('shuffle-on'),1500); playFromQueue(0); updateStatus(); }
+function playFiltered(){ queue=getFiltered(); queueIdx=0; autoplayOn=true; document.getElementById('btn-autoplay').classList.add('autoplay-on'); if(queue.length>0) playFromQueue(0); updateStatus(); }
+function updateStatus(){ const el=document.getElementById('playback-status'); if(autoplayOn&&queue.length>0) el.textContent='Autoplay on · '+queue.length+' videos in queue'; else if(autoplayOn) el.textContent='Autoplay on · click any video to start'; else el.textContent='26 cat breeds · 130 browser-verified videos'; }
+function playFromQueue(idx){ if(idx<0||idx>=queue.length) return; queueIdx=idx; const v=queue[idx]; openVideo(v.id,v.title,v.meta+' · '+v.breed,true); highlightCard(v.id); }
+function playAdjacentVideo(dir){ if(queue.length===0){ queue=getFiltered(); const ci=queue.findIndex(v=>v.id===currentId); queueIdx=ci>=0?ci:0; } const next=queueIdx+dir; if(next>=0&&next<queue.length) playFromQueue(next); }
+function highlightCard(id){ document.querySelectorAll('.card').forEach(c=>c.classList.remove('now-playing')); const card=document.querySelector(`[data-id="${id}"]`); if(card){ card.classList.add('now-playing'); card.scrollIntoView({block:'nearest',behavior:'smooth'}); } }
+function updateQueueBadge(){ const badge=document.getElementById('queue-badge'),pos=document.getElementById('queue-pos'); if(queue.length>0){ const n=queueIdx+1; badge.textContent=n+' / '+queue.length; badge.style.display='inline-block'; pos.textContent=n+' of '+queue.length; } else{ badge.style.display='none'; pos.textContent=''; } document.getElementById('btn-prev').disabled=queueIdx<=0; document.getElementById('btn-next').disabled=queue.length===0||queueIdx>=queue.length-1; }
+
+/* ══ MODAL ════════════════════════════════ */
+window.addEventListener('message',function(e){ try{ const d=JSON.parse(e.data); if(d.event==='onError'&&[100,101,150].includes(Number(d.info))) showFallback(); if(d.event==='onStateChange'&&d.info===0&&autoplayOn) playAdjacentVideo(1); }catch(_){} });
+function onIframeLoad(iframe){ setTimeout(function(){ try{ const t=iframe.contentDocument&&iframe.contentDocument.title; if(t==='YouTube'||t==='') showFallback(); }catch(_){} },2500); }
+function showFallback(){ const fb=document.getElementById('modal-fallback'); if(fb.classList.contains('visible')) return; document.getElementById('fallback-title').textContent=currentTitle; document.getElementById('fallback-btn').href=ytw(currentId); fb.classList.add('visible'); }
+function hideFallback(){ document.getElementById('modal-fallback').classList.remove('visible'); }
+function openVideo(id,title,meta,fromQueue){ currentId=id; currentTitle=title; hideFallback(); if(!fromQueue){ queue=getFiltered(); queueIdx=queue.findIndex(v=>v.id===id); if(queueIdx<0) queueIdx=0; } document.getElementById('modal-iframe').src=emb(id); document.getElementById('modal-title').textContent=title; document.getElementById('modal-meta').textContent=meta; document.getElementById('modal-yt-link').href=ytw(id); document.getElementById('fallback-btn').href=ytw(id); document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; updateQueueBadge(); updateStatus(); }
+function closeModalNow(){ document.getElementById('modal-iframe').src=''; document.getElementById('modal').classList.remove('open'); hideFallback(); document.body.style.overflow=''; document.querySelectorAll('.card').forEach(c=>c.classList.remove('now-playing')); }
+function closeModal(e){ if(e.target===document.getElementById('modal')) closeModalNow(); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModalNow(); if(e.key==='ArrowRight') playAdjacentVideo(1); if(e.key==='ArrowLeft') playAdjacentVideo(-1); });
+
+/* Init */
+buildBreedList();
+renderGrid();
+</script>
+</body>
+</html>
